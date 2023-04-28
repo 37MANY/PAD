@@ -2,8 +2,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import requests
 import os
+import requests
 
 driver = webdriver.Chrome()
 driver.get("https://www.pap.pl/")
@@ -47,7 +47,7 @@ news_titles = WebDriverWait(driver, 10).until(
 )
 
 titles = []
-print("Articles:")
+print("Titles:")
 for title in news_titles:
     print(title.text)
 
@@ -69,8 +69,12 @@ for i, img in enumerate(image_elements):
                 if chunk:
                     f.write(chunk)
 
+
 #Zadanie 7
-driver.execute_script("window.scrollBy(0,1000)")
+
+#driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+#Zadanie 8 nie działa przy użyciu tego powyżej, dlatego skorzystałem z:
+driver.execute_script("window.scrollBy(0,1600)")
 
 #Zadanie 8
 try:
@@ -78,8 +82,15 @@ try:
         EC.element_to_be_clickable((By.XPATH, '//a[@href="?page=78"]'))
     )
     last_page.click()
-    print("Navigated to the last page")
+    current_page = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.XPATH, '//a[@title="Current page"]'))
+    )
+    page_number = current_page.text.strip()
+    print(f"The last page number is {page_number}")
+
 except:
     print("Unable to navigate to the last page")
+
+
 
 
