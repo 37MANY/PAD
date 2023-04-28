@@ -9,7 +9,6 @@ driver = webdriver.Chrome()
 driver.get("https://www.pap.pl/")
 
 #Zadanie 1.
-#oczekiwanie na pojawienie się przycisku
 try:
     cookies_accept = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.XPATH, "//div[@class='ok closeButton']"))
@@ -47,10 +46,40 @@ news_titles = WebDriverWait(driver, 10).until(
     EC.presence_of_all_elements_located((By.XPATH, "//h2[@class='title']/a"))
 )
 
-# Extract the titles and append them to the titles list
 titles = []
-print("Tytuły artykułów:")
+print("Articles:")
 for title in news_titles:
     print(title.text)
 
 #Zadanie 6
+image_elements = WebDriverWait(driver, 10).until(
+    EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".imageWrapper img"))
+)
+
+if not os.path.exists("Photos"):
+    os.makedirs("Photos")
+
+for i, img in enumerate(image_elements):
+    img_url = img.get_attribute("src")
+    img_file = f"Photos/photo{i}.jpg"
+    response = requests.get(img_url, stream=True)
+    if response.ok:
+        with open(img_file, "wb") as f:
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:
+                    f.write(chunk)
+
+#Zadanie 7
+driver.execute_script("window.scrollBy(0,1000)")
+
+#Zadanie 8
+try:
+    last_page = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.XPATH, '//a[@href="?page=78"]'))
+    )
+    last_page.click()
+    print("Navigated to the last page")
+except:
+    print("Unable to navigate to the last page")
+
+
